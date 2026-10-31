@@ -1,0 +1,3 @@
+const router=require('express').Router();const db=require('../db');const auth=require('../middleware/auth');
+router.get('/',auth(),async(req,res)=>{const [[p]]=await db.query('SELECT COUNT(*) total, SUM(status="connected") connected, SUM(status="development") development FROM projects');const [[u]]=await db.query('SELECT COUNT(*) total FROM app_users');const [[e]]=await db.query('SELECT COUNT(*) total FROM project_events WHERE created_at >= NOW()-INTERVAL 30 DAY');const [recent]=await db.query('SELECT action,details,created_at FROM audit_logs ORDER BY id DESC LIMIT 8');res.json({projects:p,users:u.total,events30d:e.total,recent});});
+module.exports=router;
